@@ -18,7 +18,18 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Same-origin, mobile, curl — ruxsat
+    if (!origin) return callback(null, true);
+    // localhost dev
+    if (origin.includes('localhost')) return callback(null, true);
+    // Railway domenlar
+    if (origin.includes('railway.app')) return callback(null, true);
+    // Custom domen (poserp.uz va boshqalar)
+    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
+    // Hamma narsaga ruxsat (production uchun)
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

@@ -5,20 +5,29 @@ async function seed() {
   try {
     await sequelize.authenticate();
     console.log('✅ Database ulandi');
-    await sequelize.sync({ force: true });
-    console.log('✅ Jadvallar yaratildi');
+    await sequelize.sync({ alter: true });
+    console.log('✅ Jadvallar tekshirildi');
+
+    // Agar superadmin allaqachon mavjud bo'lsa — seed o'tkazib yuboriladi
+    const existingAdmin = await User.findOne({ where: { role: 'superadmin' } });
+    if (existingAdmin) {
+      console.log('ℹ️  Ma\'lumotlar allaqachon mavjud, seed o\'tkazib yuborildi');
+      console.log('📧 SuperAdmin:', existingAdmin.email);
+      process.exit(0);
+      return;
+    }
 
     // Super Admin
     const superadmin = await User.create({
       name: 'Super Admin',
-      email: process.env.SUPER_ADMIN_EMAIL,
-      password: process.env.SUPER_ADMIN_PASSWORD,
+      email: process.env.SUPER_ADMIN_EMAIL || 'admin@fastfoot.uz',
+      password: process.env.SUPER_ADMIN_PASSWORD || 'Admin@123',
       role: 'superadmin',
       phone: '+998901234567',
     });
     console.log('✅ SuperAdmin yaratildi:', superadmin.email);
 
-    // Director (avval yaratiladi, keyin tenantId = director.id)
+    // Director
     const director = await User.create({
       name: 'Abdullayev Jasur',
       email: 'director@fastfoot.uz',
@@ -26,25 +35,23 @@ async function seed() {
       role: 'director',
       phone: '+998901111111',
     });
-    // tenantId = o'z ID si (har bir director o'z tenant egasi)
     await director.update({ tenantId: director.id });
 
-    // Filiallar (tenantId = director.id)
+    // Filiallar
     const branch1 = await Branch.create({
       name: 'Fastfoot - Chilonzor', address: 'Chilonzor ko\'chasi 15',
       city: 'Toshkent', phone: '+998711234567',
       directorId: director.id, tenantId: director.id,
     });
-    const branch2 = await Branch.create({
+    await Branch.create({
       name: 'Fastfoot - Yunusobod', address: 'Yunusobod 18-mavze',
       city: 'Toshkent', phone: '+998712345678',
       directorId: director.id, tenantId: director.id,
     });
 
-    // Director ning asosiy filialni belgilash
     await director.update({ branchId: branch1.id });
 
-    // Cashier (tenantId = director.id)
+    // Cashier
     await User.create({
       name: 'Karimov Bobur',
       email: 'cashier@fastfoot.uz',
@@ -56,7 +63,7 @@ async function seed() {
     });
     console.log('✅ Foydalanuvchilar yaratildi');
 
-    // Kategoriyalar (tenantId = director.id)
+    // Kategoriyalar
     const cats = await Category.bulkCreate([
       { name: 'Burgerlar', icon: '🍔', order: 1, tenantId: director.id },
       { name: 'Pittsalar',  icon: '🍕', order: 2, tenantId: director.id },
@@ -66,7 +73,7 @@ async function seed() {
     ]);
     console.log('✅ Kategoriyalar yaratildi');
 
-    // Mahsulotlar (tenantId = director.id)
+    // Mahsulotlar
     await Product.bulkCreate([
       { name: 'Classic Burger',  price: 25000, costPrice: 12000, categoryId: cats[0].id, prepTime: 10, calories: 520, isActive: true, tenantId: director.id },
       { name: 'Double Burger',   price: 35000, costPrice: 17000, categoryId: cats[0].id, prepTime: 12, calories: 720, isActive: true, tenantId: director.id },
@@ -81,7 +88,7 @@ async function seed() {
     console.log('✅ Mahsulotlar yaratildi');
 
     console.log('\n🎉 Seeder muvaffaqiyatli bajarildi!\n');
-    console.log('📧 SuperAdmin:', process.env.SUPER_ADMIN_EMAIL, '| 🔑', process.env.SUPER_ADMIN_PASSWORD);
+    console.log('📧 SuperAdmin:', superadmin.email, '| 🔑 Admin@123');
     console.log('📧 Director:   director@fastfoot.uz | 🔑 Director@123');
     console.log('📧 Cashier:    cashier@fastfoot.uz  | 🔑 Cashier@123\n');
 
