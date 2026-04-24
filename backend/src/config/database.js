@@ -6,6 +6,9 @@ let sequelize;
 const dbUrl = process.env.DATABASE_URL || process.env.DATABASE_PRIVATE_URL;
 const pgHost = process.env.PGHOST;
 
+console.log('[DB] DATABASE_URL:', dbUrl ? 'SET' : 'NOT SET');
+console.log('[DB] PGHOST:', pgHost ? 'SET' : 'NOT SET');
+
 if (dbUrl) {
   // Production: PostgreSQL via URL
   sequelize = new Sequelize(dbUrl, {
@@ -39,7 +42,6 @@ if (dbUrl) {
 } else {
   // Local: SQLite
   const path = require('path');
-  const sqlite3 = require('sqlite3');
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: path.join(__dirname, '../../database.sqlite'),
