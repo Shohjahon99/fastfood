@@ -81,11 +81,15 @@ app.use((err, req, res, next) => {
 // ─── Ishga tushirish ──────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 
+const dbType = (process.env.DATABASE_URL || process.env.DATABASE_PRIVATE_URL || process.env.PGHOST)
+  ? 'PostgreSQL'
+  : 'SQLite';
+
 sequelize.sync({ alter: true })
   .then(() => {
     app.listen(PORT, () => {
       console.log(`\n🚀 Fastfoot ERP API: http://localhost:${PORT}`);
-      console.log(`📦 Database: SQLite (database.sqlite)`);
+      console.log(`📦 Database: ${dbType}`);
       console.log(`🔐 Xavfsizlik: Helmet + Rate Limit + Sanitize\n`);
     });
   })
