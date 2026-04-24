@@ -110,7 +110,7 @@ export default function LoginPage() {
   };
 
   const demoAccounts = [
-    { role: 'Super Admin', email: 'superadmin@fastfoot.uz', pass: 'Admin@123456', color: 'bg-red-50 border-red-200 text-red-700' },
+    { role: 'Super Admin', email: 'admin@fastfoot.uz', pass: 'Admin@123', color: 'bg-red-50 border-red-200 text-red-700' },
     { role: 'Direktor', email: 'director@fastfoot.uz', pass: 'Director@123', color: 'bg-orange-50 border-orange-200 text-orange-700' },
     { role: 'Kassir', email: 'cashier@fastfoot.uz', pass: 'Cashier@123', color: 'bg-green-50 border-green-200 text-green-700' },
   ];

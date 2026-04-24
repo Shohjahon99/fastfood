@@ -4,7 +4,7 @@ const { success, error } = require('../../utils/response');
 
 const generateToken = (user) => jwt.sign(
   { id: user.id, role: user.role, branchId: user.branchId },
-  process.env.JWT_SECRET,
+  process.env.JWT_SECRET || 'fastfoot-erp-secret-2025',
   { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
 );
 

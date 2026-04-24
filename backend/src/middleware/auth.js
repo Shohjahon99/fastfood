@@ -8,7 +8,7 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Token kiritilmagan' });
     }
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fastfoot-erp-secret-2025');
     const user = await User.findByPk(decoded.id);
     if (!user || !user.isActive) {
       return res.status(401).json({ success: false, message: 'Foydalanuvchi topilmadi' });
