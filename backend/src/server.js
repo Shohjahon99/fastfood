@@ -63,10 +63,20 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ─── 404 handler ──────────────────────────────────────────────
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: `${req.method} ${req.path} — topilmadi` });
-});
+// ─── Frontend (production) ────────────────────────────────────
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+const fs = require('fs');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+} else {
+  // ─── 404 handler ──────────────────────────────────────────────
+  app.use((req, res) => {
+    res.status(404).json({ success: false, message: `${req.method} ${req.path} — topilmadi` });
+  });
+}
 
 // ─── Global error handler ─────────────────────────────────────
 app.use((err, req, res, next) => {

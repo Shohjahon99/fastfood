@@ -4,7 +4,7 @@
   "description": "Fastfoot ERP - To'liq boshqaruv tizimi",
   "scripts": {
     "start": "cd backend && node src/server.js",
-    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
     "backend": "cd backend && npm run dev",
     "frontend": "cd frontend && npm run dev",
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
